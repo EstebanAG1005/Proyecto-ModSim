@@ -1,6 +1,7 @@
 # Importamos las bibliotecas necesarias
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+from matplotlib import animation
 
 
 class Festival:
@@ -14,6 +15,11 @@ class Festival:
         self.puntos_encuentro = []
         self.salidas = []
         self.zonas_comerciales = []
+        self.salida = {
+            "x": width,
+            "y": height / 2,
+        }  # Añadimos una salida en la mitad del borde derecho
+        self.baños = []
 
     def agregar_escenario(self, x, y, width, height, capacidad):
         self.escenarios.append(
@@ -23,8 +29,8 @@ class Festival:
     def agregar_zona_comida(self, x, y, capacidad):
         self.zonas_comida.append({"coords": (x, y), "capacidad": capacidad})
 
-    def agregar_baño(self, x, y):
-        self.baños.append((x, y))
+    def agregar_baños(self, x, y, radio):
+        self.baños.append({"coords": (x, y), "radio": radio})
 
     def agregar_punto_encuentro(self, x, y, capacidad):
         self.puntos_encuentro.append({"coords": (x, y), "capacidad": capacidad})
@@ -38,8 +44,8 @@ class Festival:
         )
 
     def mostrar_mapa(self):
-        self.ax.set_xlim(0, self.width)
-        self.ax.set_ylim(0, self.height)
+        ax.set_xlim(0, self.width)
+        ax.set_ylim(0, self.height)
 
         for escenario in self.escenarios:
             rect = patches.Rectangle(
@@ -104,39 +110,74 @@ class Festival:
         handles, labels = self.ax.get_legend_handles_labels()
         by_label = dict(zip(labels, handles))
         self.ax.legend(
-            by_label.values(), by_label.keys(), loc="upper left", bbox_to_anchor=(1, 1)
+            by_label.values(), by_label.keys(), loc="upper left", bbox_to_widthr=(1, 1)
         )
         plt.show()
 
     def dibujar(self, asistentes):
         fig, ax = plt.subplots(figsize=(10, 10))
-        ax.set_xlim(0, self.ancho)
-        ax.set_ylim(0, self.alto)
+        ax.set_xlim(0, self.width)
+        ax.set_ylim(0, self.height)
+
+        plt.scatter(
+            self.salida["x"],
+            self.salida["y"],
+            color="black",
+            marker="s",
+            label="Salida",
+        )
+
+        # Dibuja los baños
+        for baño in self.baños:
+            plt.scatter(
+                baño["coords"][0], baño["coords"][1], color="blue", label="Baño"
+            )
 
         # Dibujar escenarios
         for escenario in self.escenarios:
             ax.add_patch(
                 patches.Rectangle(
-                    (escenario["coords"][0], escenario["coords"][1]),
-                    escenario["ancho"],
-                    escenario["alto"],
+                    (
+                        escenario["coords"][0]
+                        - escenario["dims"][0] / 2,  # Cambio aquí
+                        escenario["coords"][1] - escenario["dims"][1] / 2,  # Y aquí
+                    ),
+                    escenario["dims"][0],  # Cambio aquí
+                    escenario["dims"][1],  # Y aquí
                     color="blue",
                 )
             )
 
+        # Dibujar zonas de comida
+        for zona in self.zonas_comida:
+            ax.add_patch(patches.Circle(zona["coords"], 5, color="green"))
+
         # Dibujar zonas comerciales
-        for tienda in self.zonas_comerciales:
+        for zona in self.zonas_comerciales:
             ax.add_patch(
                 patches.Rectangle(
-                    (tienda["coords"][0], tienda["coords"][1]),
-                    tienda["ancho"],
-                    tienda["alto"],
-                    color="green",
+                    (
+                        zona["coords"][0] - zona["dims"][0] / 2,  # Corrección aquí
+                        zona["coords"][1] - zona["dims"][1] / 2,  # Y aquí
+                    ),
+                    zona["dims"][0],  # Aquí
+                    zona["dims"][1],  # Y aquí
+                    color="red",
                 )
             )
 
-        # Dibujar asistentes
-        for asistente in asistentes:
-            ax.plot(asistente.x, asistente.y, "ro")
+        (puntos_asistentes,) = ax.plot(
+            [a.x for a in asistentes], [a.y for a in asistentes], "o", markersize=3
+        )
 
+        def update(num):
+            # Actualizar posiciones de los asistentes
+            for a in asistentes:
+                a.actualizar()
+            puntos_asistentes.set_data(
+                [a.x for a in asistentes], [a.y for a in asistentes]
+            )
+            return (puntos_asistentes,)
+
+        ani = animation.FuncAnimation(fig, update, frames=100, blit=True, interval=100)
         plt.show()
