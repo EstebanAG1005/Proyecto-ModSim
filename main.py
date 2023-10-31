@@ -17,6 +17,7 @@ PAUSA_POR_ITERACION = DURACION_SIMULACION_REAL / ITERACIONES_TOTAL
 
 festival = Festival(100, 100)
 festival.agregar_escenario(20, 70, 20, 10, 500)
+festival.agregar_escenario(40, 90, 10, 10, 250)
 festival.agregar_zona_comida(60, 60, 100)
 festival.agregar_zona_comercial(80, 20, 10, 5, 100)
 festival.agregar_baños(30, 30, 10)
