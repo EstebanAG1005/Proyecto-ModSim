@@ -20,6 +20,7 @@ class Asistente:
         self.edad = np.random.randint(15, 60)  # Edad de 15 a 60 años
         self.gasto = np.random.uniform(0, 500)  # Dinero disponible para gastar
         self.hambre = np.random.uniform(0, 100)  # Hambre de 0 a 100%
+        self.necesidad_bano = np.random.uniform(0, 100)  # Ganas de ir al baño de 0 a 100%
         self.causando_problemas = np.random.choice(
             [True, False], p=[0.05, 0.95]
         )  # 5% de probabilidad de causar problemas
@@ -57,22 +58,25 @@ class Asistente:
                     0, self.gasto
                 )  # Gastará una cantidad aleatoria de su dinero disponible
 
-    def actualizar(self):
-        # Actualizamos el estado y comportamiento del asistente
-        self.mover()
-        self.interactuar_tiendas()
-        self.energia -= 0.1  # Cada paso consume un poco de energía
-
     def mover_hacia_baño(self):
         # Suponemos que si un asistente necesita ir al baño su necesidad es > 90
-        if self.necesidad_baño > 90 and len(self.festival.baños) > 0:
+        if self.necesidad_bano > 90 and len(self.festival.baños) > 0:
             baño_cercano = min(
                 self.festival.baños,
-                key=lambda b: np.hypot(
-                    self.x - b["coords"][0], self.y - b["coords"][1]
-                ),
+                key=lambda b: np.hypot(self.x - b["coords"][0], self.y - b["coords"][1])
             )
-            # ... [Lógica para moverse hacia el baño]
+            
+            # Calculamos la dirección hacia el baño
+            dir_x = baño_cercano["coords"][0] - self.x
+            dir_y = baño_cercano["coords"][1] - self.y
+            norm = np.hypot(dir_x, dir_y)
+            
+            # Movemos al asistente hacia el baño
+            if norm > 0:
+                dir_x /= norm
+                dir_y /= norm
+                self.x += dir_x * self.velocidad
+                self.y += dir_y * self.velocidad
 
     def mover_hacia_comida(self):
         if self.hambre < 20 and len(self.festival.zonas_comida) > 0:
@@ -115,6 +119,7 @@ class Asistente:
         # Actualizamos el estado y comportamiento del asistente
         self.mover()
         self.mover_hacia_comida()
+        self.mover_hacia_baño()
         self.mover_hacia_salida()
         self.interactuar_tiendas()
         self.energia -= 0.1  # Cada paso consume un poco de energía

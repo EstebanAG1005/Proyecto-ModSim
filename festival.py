@@ -43,6 +43,7 @@ class Festival:
             {"coords": (x, y), "dims": (width, height), "capacidad": capacidad}
         )
 
+    # para esteban: esta funcion no hace nada xD
     def mostrar_mapa(self):
         ax.set_xlim(0, self.width)
         ax.set_ylim(0, self.height)
