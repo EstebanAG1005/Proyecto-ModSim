@@ -29,6 +29,5 @@ class Seguridad:
         for asistente in asistentes_problematicos:
             asistentes.remove(asistente)
 
-        return len(
-            asistentes_problematicos
-        )  # devuelve el número de asistentes problemáticos detectados
+        return len(asistentes_problematicos)  # devuelve el número de asistentes problemáticos detectados
+    

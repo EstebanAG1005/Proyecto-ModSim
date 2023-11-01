@@ -96,9 +96,7 @@ for iteracion in range(ITERACIONES_TOTAL):
 
     for guardia in seguridad:
         guardia.patrullar()
-        incidentes_detectados += guardia.detectar_incidentes(
-            asistentes
-        )  # Asumiendo que devuelve el número de incidentes detectados
+        incidentes_detectados += guardia.detectar_incidentes(asistentes)  # Asumiendo que devuelve el número de incidentes detectados
 
     for asistente in asistentes:
         asistente.actualizar()
@@ -112,4 +110,4 @@ for iteracion in range(ITERACIONES_TOTAL):
     print(f"Asistentes que han salido: {asistentes_salidos}")
     print(f"Gasto promedio por asistente: {gasto_total / len(asistentes)}")
     print(f"Incidentes detectados: {incidentes_detectados}")
-    print(f"Asistentes en baños: {asistentes_en_baños}")
+    print(f"Asistentes en baños: {asistentes_en_baños}\n")
