@@ -43,7 +43,7 @@ class Festival:
             {"coords": (x, y), "dims": (width, height), "capacidad": capacidad}
         )
 
-    def dibujar(self, asistentes):
+    def dibujar(self, asistentes, seguridad):
         fig, ax = plt.subplots(figsize=(10, 10))
         ax.set_xlim(0, self.width)
         ax.set_ylim(0, self.height)
@@ -95,8 +95,14 @@ class Festival:
                 )
             )
 
+        # asistentes
         (puntos_asistentes,) = ax.plot(
             [a.x for a in asistentes], [a.y for a in asistentes], "o", markersize=3
+        )
+
+        # seguridad 
+        (puntos_seguridad,) = ax.plot(
+            [s.x for s in seguridad], [s.y for s in seguridad], "s", markersize=5, color="orange"
         )
 
         def update(num):
@@ -106,7 +112,15 @@ class Festival:
             puntos_asistentes.set_data(
                 [a.x for a in asistentes], [a.y for a in asistentes]
             )
-            return (puntos_asistentes,)
+
+            # Actualiza posiciones de los miembros de seguridad
+            for s in seguridad:
+                s.patrullar()
+            puntos_seguridad.set_data(
+                [a.x for a in seguridad], [a.y for a in seguridad]
+            )
+
+            return (puntos_asistentes,puntos_seguridad)
 
         ani = animation.FuncAnimation(fig, update, frames=100, blit=True, interval=100)
         plt.show()

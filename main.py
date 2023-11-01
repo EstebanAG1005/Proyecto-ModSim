@@ -31,7 +31,7 @@ asistentes = [
     Asistente(festival, np.random.randint(100), np.random.randint(100))
     for _ in range(100)
 ]
-festival.dibujar(asistentes)
+festival.dibujar(asistentes, seguridad)
 
 # Métricas
 asistentes_en_escenario = 0
@@ -43,7 +43,7 @@ incidentes_detectados = 0  # Nueva métrica
 
 # Realizamos una simulación simple mostrando el movimiento de los asistentes en cada paso
 for iteracion in range(ITERACIONES_TOTAL):
-    festival.dibujar(asistentes)
+    festival.dibujar(asistentes, seguridad)
 
     asistentes_en_escenario = sum(
         [
