@@ -78,7 +78,7 @@ for iteracion in range(ITERACIONES_TOTAL):
         [
             1
             for a in asistentes
-            if x_range_salida[0] <= a.x <= x_range_salida[1] and y_range_salida[0] <= a.y <= y_range_salida[1]
+            if a.estado == "salió"
         ]
     )
 
