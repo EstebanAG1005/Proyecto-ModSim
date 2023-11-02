@@ -128,6 +128,7 @@ class Asistente:
 
             if np.abs(dir_x) <= 4 and np.abs(dir_y) <=4:
                 self.hambre = 100
+                self.necesidad_bano += 30
                 
             norm = np.hypot(dir_x, dir_y)
             if norm > 0:
@@ -151,6 +152,10 @@ class Asistente:
 
             if self.festival.salida['x']-3 <= self.x <= self.festival.salida['x']+3 and self.festival.salida['y']-3 <= self.y <= self.festival.salida['y'] +3:
                 self.estado = "salió"
+
+            if np.random.randint(0,100) <= 5:
+                self.energia = 50
+            
             return True
         return False
 
