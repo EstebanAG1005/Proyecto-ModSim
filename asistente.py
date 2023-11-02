@@ -47,11 +47,12 @@ class Asistente:
         
         elif self.aburrimiento >= 80:
             if 0 <= self.x <= self.festival.width: 
-                self.x += np.random.randint(0, 2) -1
+                self.x += np.random.randint(0, 3) -1
             
             if 0 <= self.y <= self.festival.height:
-                self.y += np.random.randint(0, 2) -1
-            self.aburrimiento -=2
+                self.y += np.random.randint(0, 3) -1
+            if np.random.randint(0,100) < 6:
+                self.aburrimiento = 10
         
         else:
             if len(self.festival.escenarios) > 0:
@@ -99,7 +100,7 @@ class Asistente:
             dir_y = baño_cercano["coords"][1] - self.y
 
             if -3 <= dir_x <= 3 and -3 <= dir_y <= 3:
-                self.necesidad_bano = 0
+                self.necesidad_bano = 15
 
             norm = np.hypot(dir_x, dir_y)
             
@@ -164,4 +165,5 @@ class Asistente:
 
         self.energia -= 0.05  # Cada paso consume un poco de energía
         self.hambre -= 0.1  # Los asistentes se vuelven más hambrientos con el tiempo
-        self.aburrimiento += 0.5
+        self.aburrimiento += 0.8
+        self.necesidad_bano += 0.1
