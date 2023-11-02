@@ -43,6 +43,7 @@ incidentes_detectados = 0  # Nueva métrica
 
 # Realizamos una simulación simple mostrando el movimiento de los asistentes en cada paso
 for iteracion in range(ITERACIONES_TOTAL):
+
     festival.dibujar(asistentes, seguridad)
 
     asistentes_en_escenario = sum(
@@ -77,9 +78,11 @@ for iteracion in range(ITERACIONES_TOTAL):
         [
             1
             for a in asistentes
-            if a.x <= 0 or a.x >= festival.width or a.y <= 0 or a.y >= festival.height
+            if x_range_salida[0] <= a.x <= x_range_salida[1] and y_range_salida[0] <= a.y <= y_range_salida[1]
         ]
     )
+
+
     gasto_total = sum([a.gasto for a in asistentes])
 
     asistentes_en_baños = sum(

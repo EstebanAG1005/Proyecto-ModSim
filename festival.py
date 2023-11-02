@@ -110,7 +110,7 @@ class Festival:
             for a in asistentes:
                 a.actualizar()
             puntos_asistentes.set_data(
-                [a.x for a in asistentes], [a.y for a in asistentes]
+                [a.x for a in asistentes if a.estado != "salió"], [a.y for a in asistentes if a.estado != "salió"]
             )
 
             # Actualiza posiciones de los miembros de seguridad
