@@ -33,7 +33,8 @@ class Festival:
         self.baños.append({"coords": (x, y), "radio": radio})
 
     def agregar_punto_encuentro(self, x, y, capacidad):
-        self.puntos_encuentro.append({"coords": (x, y), "capacidad": capacidad})
+        self.puntos_encuentro.append({"coords": (x, y),
+                                      "capacidad": capacidad})
 
     def agregar_salida(self, x, y, width, height):
         self.salidas.append({"coords": (x, y), "dims": (width, height)})
@@ -59,7 +60,10 @@ class Festival:
         # Dibuja los baños
         for baño in self.baños:
             plt.scatter(
-                baño["coords"][0], baño["coords"][1], color="blue", label="Baño"
+                baño["coords"][0],
+                baño["coords"][1],
+                color="blue",
+                label="Baño"
             )
 
         # Dibujar escenarios
@@ -67,9 +71,11 @@ class Festival:
             ax.add_patch(
                 patches.Rectangle(
                     (
-                        escenario["coords"][0]
-                        - escenario["dims"][0] / 2,  # Cambio aquí
-                        escenario["coords"][1] - escenario["dims"][1] / 2,  # Y aquí
+                        # Cambio aquí
+                        escenario["coords"][0]\
+                        - escenario["dims"][0] / 2,
+                        # Y aquí
+                        escenario["coords"][1] - escenario["dims"][1] / 2,
                     ),
                     escenario["dims"][0],  # Cambio aquí
                     escenario["dims"][1],  # Y aquí
@@ -86,7 +92,8 @@ class Festival:
             ax.add_patch(
                 patches.Rectangle(
                     (
-                        zona["coords"][0] - zona["dims"][0] / 2,  # Corrección aquí
+                        # Corrección aquí
+                        zona["coords"][0] - zona["dims"][0] / 2,
                         zona["coords"][1] - zona["dims"][1] / 2,  # Y aquí
                     ),
                     zona["dims"][0],  # Aquí
@@ -97,12 +104,19 @@ class Festival:
 
         # asistentes
         (puntos_asistentes,) = ax.plot(
-            [a.x for a in asistentes], [a.y for a in asistentes], "o", markersize=3
+            [a.x for a in asistentes],
+            [a.y for a in asistentes],
+            "o",
+            markersize=3
         )
 
-        # seguridad 
+        # seguridad
         (puntos_seguridad,) = ax.plot(
-            [s.x for s in seguridad], [s.y for s in seguridad], "s", markersize=5, color="orange"
+            [s.x for s in seguridad],
+            [s.y for s in seguridad],
+            "s",
+            markersize=5,
+            color="orange"
         )
 
         def update(num):
@@ -110,7 +124,8 @@ class Festival:
             for a in asistentes:
                 a.actualizar()
             puntos_asistentes.set_data(
-                [a.x for a in asistentes if a.estado != "salió"], [a.y for a in asistentes if a.estado != "salió"]
+                [a.x for a in asistentes if a.estado != "salió"],
+                [a.y for a in asistentes if a.estado != "salió"]
             )
 
             # Actualiza posiciones de los miembros de seguridad
@@ -120,7 +135,9 @@ class Festival:
                 [a.x for a in seguridad], [a.y for a in seguridad]
             )
 
-            return (puntos_asistentes,puntos_seguridad)
+            return (puntos_asistentes, puntos_seguridad)
 
-        ani = animation.FuncAnimation(fig, update, frames=100, blit=True, interval=100)
+        ani = animation.FuncAnimation(fig, update, frames=100,
+                                      blit=True, interval=100)
+
         plt.show()

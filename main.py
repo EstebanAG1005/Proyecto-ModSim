@@ -28,7 +28,8 @@ seguridad = [
 ]
 
 asistentes = [
-    Asistente(festival, np.random.randint(100), np.random.randint(100))
+    Asistente(festival, np.random.randint(100), np.random.randint(100),
+              np.random.uniform(0.01, 1))
     for _ in range(100)
 ]
 festival.dibujar(asistentes, seguridad)
@@ -41,7 +42,8 @@ asistentes_salidos = 0
 gasto_total = 0
 incidentes_detectados = 0  # Nueva métrica
 
-# Realizamos una simulación simple mostrando el movimiento de los asistentes en cada paso
+# Realizamos una simulación simple mostrando el movimiento
+# de los asistentes en cada paso
 for iteracion in range(ITERACIONES_TOTAL):
 
     festival.dibujar(asistentes, seguridad)
@@ -82,7 +84,6 @@ for iteracion in range(ITERACIONES_TOTAL):
         ]
     )
 
-
     gasto_total = sum([a.gasto for a in asistentes])
 
     asistentes_en_baños = sum(
@@ -99,7 +100,8 @@ for iteracion in range(ITERACIONES_TOTAL):
 
     for guardia in seguridad:
         guardia.patrullar()
-        incidentes_detectados += guardia.detectar_incidentes(asistentes)  # Asumiendo que devuelve el número de incidentes detectados
+        # Asumiendo que devuelve el número de incidentes detectados
+        incidentes_detectados += guardia.detectar_incidentes(asistentes)
 
     for asistente in asistentes:
         asistente.actualizar()

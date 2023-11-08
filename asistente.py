@@ -10,48 +10,56 @@ class Asistente:
         "en pánico"
     ]
 
-    def __init__(self, festival, x, y):
+    def __init__(self, festival, x, y, clumpsynes=0.05):
         self.festival = festival
         self.x = x
         self.y = y
         self.estado = np.random.choice(Asistente.ESTADOS)
-        self.velocidad = np.random.uniform(1, 5)  # Velocidad de 1 a 5 m/s
-        self.energia = np.random.uniform(0, 100)  # Energía de 0 a 100%
-        self.edad = np.random.randint(15, 60)  # Edad de 15 a 60 años
-        self.gasto = np.random.uniform(0, 500)  # Dinero disponible para gastar
-        self.aburrimiento = np.random.uniform(0, 100)  # Dinero disponible para gastar
-        self.hambre = np.random.uniform(0, 100)  # Hambre de 0 a 100%
-        self.necesidad_bano = np.random.uniform(0, 100)  # Ganas de ir al baño de 0 a 100%
+        # Velocidad de 1 a 5 m/s
+        self.velocidad = np.random.uniform(1, 5)
+        # Energía de 0 a 100%
+        self.energia = np.random.uniform(0, 100)
+        # Edad de 15 a 60 años
+        self.edad = np.random.randint(15, 60)
+        # Dinero disponible para gastar
+        self.gasto = np.random.uniform(0, 500)
+        # Dinero disponible para gastar
+        self.aburrimiento = np.random.uniform(0, 100)
+        # Hambre de 0 a 100%
+        self.hambre = np.random.uniform(0, 100)
+        # Ganas de ir al baño de 0 a 100%
+        self.necesidad_bano = np.random.uniform(0, 100)
+        # % de probabilidad de causar problemas
         self.causando_problemas = np.random.choice(
-            [True, False], p=[0.05, 0.95]
-        )  # 5% de probabilidad de causar problemas
+            [True, False], p=[clumpsynes, 1 - clumpsynes]
+        )
 
     def mover(self):
         if self.aburrimiento >= 80 and self.gasto > 10:
-            if len(self.festival.zonas_comerciales) > 0: 
+            if len(self.festival.zonas_comerciales) > 0:
                 # Movemos al asistente hacia la zona de comercio
-                    escenario_cercano = min(
-                        self.festival.zonas_comerciales,
-                        key=lambda e: np.hypot(
-                            self.x - e["coords"][0], self.y - e["coords"][1]
-                        ),
-                    )
-                    dir_x = escenario_cercano["coords"][0] - self.x
-                    dir_y = escenario_cercano["coords"][1] - self.y
-                    norm = np.hypot(dir_x, dir_y)
-                    if norm > 0:
-                        dir_x /= norm
-                        dir_y /= norm
-                        self.x += dir_x * self.velocidad
-                        self.y += dir_y * self.velocidad
+                escenario_cercano = min(
+                    self.festival.zonas_comerciales,
+                    key=lambda e: np.hypot(
+                        self.x - e["coords"][0], self.y - e["coords"][1]
+                    ),
+                )
+                dir_x = escenario_cercano["coords"][0] - self.x
+                dir_y = escenario_cercano["coords"][1] - self.y
+                norm = np.hypot(dir_x, dir_y)
+                if norm > 0:
+                    dir_x /= norm
+                    dir_y /= norm
+                    self.x += dir_x * self.velocidad
+                    self.y += dir_y * self.velocidad
         
         elif self.aburrimiento >= 80:
-            if 0 <= self.x <= self.festival.width: 
-                self.x += np.random.randint(0, 3) -1
+            if 0 <= self.x <= self.festival.width:
+                self.x += np.random.randint(0, 3) - 1
             
             if 0 <= self.y <= self.festival.height:
-                self.y += np.random.randint(0, 3) -1
-            if np.random.randint(0,100) < 6:
+                self.y += np.random.randint(0, 3) - 1
+            if np.random.randint(0, 100) < 6:
                 self.aburrimiento = 10
         
         else:
@@ -72,15 +80,18 @@ class Asistente:
                     self.x += dir_x * self.velocidad
                     self.y += dir_y * self.velocidad
 
-        # Se pueden añadir más comportamientos dependiendo del estado del asistente
+        # Se pueden añadir más comportamientos dependiendo
+        # del estado del asistente
 
     def interactuar_tiendas(self):
-        # Si el asistente se encuentra cerca de una tienda, interactuará con ella
+        # Si el asistente se encuentra cerca de una tienda,
+        # interactuará con ella
         for tienda in self.festival.zonas_comerciales:
             distancia = np.hypot(
                 self.x - tienda["coords"][0], self.y - tienda["coords"][1]
             )
-            if distancia <= 5:  # Asumiendo que 5 metros es una distancia de interacción
+            # Asumiendo que 5 metros es una distancia de interacción
+            if distancia <= 5:
                 if self.gasto > 0:
                     self.gasto -= np.random.uniform(
                         0, self.gasto
@@ -88,11 +99,13 @@ class Asistente:
                 self.aburrimiento -= 2
 
     def mover_hacia_baño(self):
-        # Suponemos que si un asistente necesita ir al baño su necesidad es > 90
+        # Suponemos que si un asistente necesita ir al baño
+        # su necesidad es > 90
         if self.necesidad_bano > 90 and len(self.festival.baños) > 0:
             baño_cercano = min(
                 self.festival.baños,
-                key=lambda b: np.hypot(self.x - b["coords"][0], self.y - b["coords"][1])
+                key=lambda b: np.hypot(self.x - b["coords"][0],
+                                       self.y - b["coords"][1])
             )
             
             # Calculamos la dirección hacia el baño
@@ -114,7 +127,6 @@ class Asistente:
             return True
         return False
 
-
     def mover_hacia_comida(self):
         if self.hambre < 20 and len(self.festival.zonas_comida) > 0:
             zona_cercana = min(
@@ -126,7 +138,7 @@ class Asistente:
             dir_x = zona_cercana["coords"][0] - self.x
             dir_y = zona_cercana["coords"][1] - self.y
 
-            if np.abs(dir_x) <= 4 and np.abs(dir_y) <=4:
+            if np.abs(dir_x) <= 4 and np.abs(dir_y) <= 4:
                 self.hambre = 100
                 self.necesidad_bano += 30
                 
@@ -138,6 +150,17 @@ class Asistente:
                 self.y += dir_y * self.velocidad
             return True
         return False
+    
+    def in_bound(self, x, y):
+        inLow_salida_X = self.festival.salida['x'] - 3 <= x
+        inHigh_salida_X = x <= self.festival.salida['x'] + 3
+        in_salida_X = inLow_salida_X and inHigh_salida_X
+
+        inLow_salida_Y = self.festival.salida['y'] - 3 <= y
+        inHigh_salida_Y = y <= self.festival.salida['y'] + 3
+        in_salida_Y = inLow_salida_Y and inHigh_salida_Y
+
+        return in_salida_X and in_salida_Y
 
     def mover_hacia_salida(self):
         if self.energia < 10:
@@ -150,10 +173,10 @@ class Asistente:
                 self.x += dir_x * self.velocidad
                 self.y += dir_y * self.velocidad
 
-            if self.festival.salida['x']-3 <= self.x <= self.festival.salida['x']+3 and self.festival.salida['y']-3 <= self.y <= self.festival.salida['y'] +3:
+            if self.in_bound(self.x, self.y):
                 self.estado = "salió"
 
-            if np.random.randint(0,100) <= 5:
+            if np.random.randint(0, 100) <= 5:
                 self.energia = 50
             
             return True
@@ -169,6 +192,7 @@ class Asistente:
                     self.mover()
 
         self.energia -= 0.05  # Cada paso consume un poco de energía
-        self.hambre -= 0.1  # Los asistentes se vuelven más hambrientos con el tiempo
+        # Los asistentes se vuelven más hambrientos con el tiempo
+        self.hambre -= 0.1
         self.aburrimiento += 0.8
         self.necesidad_bano += 0.1
