@@ -33,19 +33,25 @@ class Asistente:
         self.causando_problemas = np.random.choice(
             [True, False], p=[clumpsynes, 1 - clumpsynes]
         )
+        self.tiempos = {
+            'tiendas': 0,
+            'escenarios': 0,
+            'baños': 0,
+            'restaurantes': 0,
+        }
 
     def mover(self):
         if self.aburrimiento >= 80 and self.gasto > 10:
             if len(self.festival.zonas_comerciales) > 0:
                 # Movemos al asistente hacia la zona de comercio
-                escenario_cercano = min(
+                zona_comercial_cercana = min(
                     self.festival.zonas_comerciales,
                     key=lambda e: np.hypot(
                         self.x - e["coords"][0], self.y - e["coords"][1]
                     ),
                 )
-                dir_x = escenario_cercano["coords"][0] - self.x
-                dir_y = escenario_cercano["coords"][1] - self.y
+                dir_x = zona_comercial_cercana["coords"][0] - self.x
+                dir_y = zona_comercial_cercana["coords"][1] - self.y
                 norm = np.hypot(dir_x, dir_y)
                 if norm > 0:
                     dir_x /= norm
@@ -56,7 +62,6 @@ class Asistente:
         elif self.aburrimiento >= 80:
             if 0 <= self.x <= self.festival.width:
                 self.x += np.random.randint(0, 3) - 1
-            
             if 0 <= self.y <= self.festival.height:
                 self.y += np.random.randint(0, 3) - 1
             if np.random.randint(0, 100) < 6:
@@ -74,12 +79,13 @@ class Asistente:
                 dir_x = escenario_cercano["coords"][0] - self.x
                 dir_y = escenario_cercano["coords"][1] - self.y
                 norm = np.hypot(dir_x, dir_y)
+                if -3 <= dir_x <= 3 and -3 <= dir_y <= 3:
+                    self.tiempos['escenarios'] +=0.2
                 if norm > 0:
                     dir_x /= norm
                     dir_y /= norm
                     self.x += dir_x * self.velocidad
                     self.y += dir_y * self.velocidad
-
         # Se pueden añadir más comportamientos dependiendo
         # del estado del asistente
 
@@ -97,6 +103,7 @@ class Asistente:
                         0, self.gasto
                     )  # Gastará una cantidad aleatoria de su dinero disponible
                 self.aburrimiento -= 2
+                self.tiempos['tiendas'] += 0.2
 
     def mover_hacia_baño(self):
         # Suponemos que si un asistente necesita ir al baño
@@ -107,13 +114,14 @@ class Asistente:
                 key=lambda b: np.hypot(self.x - b["coords"][0],
                                        self.y - b["coords"][1])
             )
-            
-            # Calculamos la dirección hacia el baño
             dir_x = baño_cercano["coords"][0] - self.x
             dir_y = baño_cercano["coords"][1] - self.y
+            
+            # Calculamos la dirección hacia el baño
 
             if -3 <= dir_x <= 3 and -3 <= dir_y <= 3:
                 self.necesidad_bano = 15
+                self.tiempos['baños'] +=0.2
 
             norm = np.hypot(dir_x, dir_y)
             
@@ -141,6 +149,7 @@ class Asistente:
             if np.abs(dir_x) <= 4 and np.abs(dir_y) <= 4:
                 self.hambre = 100
                 self.necesidad_bano += 30
+                self.tiempos['restaurantes'] += 0.2
                 
             norm = np.hypot(dir_x, dir_y)
             if norm > 0:

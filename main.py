@@ -33,7 +33,7 @@ asistentes = [
               np.random.uniform(0.01, 1))
     for _ in range(100)
 ]
-festival.dibujar(asistentes, seguridad)
+#festival.dibujar(asistentes, seguridad)
 
 # Métricas
 asistentes_en_escenario = 0
@@ -137,6 +137,27 @@ for iteracion in range(ITERACIONES_TOTAL):
         ]
     )
 
+    tiempo_en_escenarios = sum(
+        [
+            a.tiempos['escenarios'] for a in asistentes
+        ]
+    ) / len(asistentes)
+    tiempo_en_banos = sum(
+        [
+            a.tiempos['baños'] for a in asistentes
+        ]
+    ) / len(asistentes)
+    tiempo_en_restaurantes = sum(
+        [
+            a.tiempos['restaurantes'] for a in asistentes
+        ]
+    ) / len(asistentes)
+    tiempo_en_tiendas = sum(
+        [
+            a.tiempos['tiendas'] for a in asistentes
+        ]
+    ) / len(asistentes)
+
     for guardia in seguridad:
         guardia.patrullar()
         # Asumiendo que devuelve el número de incidentes detectados
@@ -155,6 +176,11 @@ for iteracion in range(ITERACIONES_TOTAL):
     print(f"Gasto promedio por asistente: {gasto_total / len(asistentes)}")
     print(f"Incidentes detectados: {incidentes_detectados}")
     print(f"Asistentes en baños: {asistentes_en_baños}\n")
+    print(f"Asistentes en baños: {asistentes_en_baños}")
+    print(f"Tiempo promedio en escenarios: {tiempo_en_escenarios}")
+    print(f"Tiempo promedio en tiendas: {tiempo_en_tiendas}")
+    print(f"Tiempo promedio en baños: {tiempo_en_banos}")
+    print(f"Tiempo promedio en restaurantes: {tiempo_en_restaurantes}\n")
 
 # TODO: Graficar
 
