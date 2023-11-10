@@ -39,6 +39,14 @@ class Asistente:
             'baños': 0,
             'restaurantes': 0,
         }
+    
+    def reset_times(self):
+        self.tiempos = {
+            'tiendas': 0,
+            'escenarios': 0,
+            'baños': 0,
+            'restaurantes': 0,
+        }
 
     def mover(self):
         if self.aburrimiento >= 80 and self.gasto > 10:
@@ -80,7 +88,7 @@ class Asistente:
                 dir_y = escenario_cercano["coords"][1] - self.y
                 norm = np.hypot(dir_x, dir_y)
                 if -3 <= dir_x <= 3 and -3 <= dir_y <= 3:
-                    self.tiempos['escenarios'] +=0.2
+                    self.tiempos['escenarios'] +=1
                 if norm > 0:
                     dir_x /= norm
                     dir_y /= norm
@@ -101,9 +109,9 @@ class Asistente:
                 if self.gasto > 0:
                     self.gasto -= np.random.uniform(
                         0, self.gasto
-                    )  # Gastará una cantidad aleatoria de su dinero disponible
+                    )/10
                 self.aburrimiento -= 2
-                self.tiempos['tiendas'] += 0.2
+                self.tiempos['tiendas'] += 1
 
     def mover_hacia_baño(self):
         # Suponemos que si un asistente necesita ir al baño
@@ -120,8 +128,10 @@ class Asistente:
             # Calculamos la dirección hacia el baño
 
             if -3 <= dir_x <= 3 and -3 <= dir_y <= 3:
-                self.necesidad_bano = 15
-                self.tiempos['baños'] +=0.2
+                if np.random.randint(0, 100) <= 20:
+                    self.aburrimiento = 10
+                    self.necesidad_bano = 15
+                self.tiempos['baños'] +=1
 
             norm = np.hypot(dir_x, dir_y)
             
@@ -147,9 +157,10 @@ class Asistente:
             dir_y = zona_cercana["coords"][1] - self.y
 
             if np.abs(dir_x) <= 4 and np.abs(dir_y) <= 4:
-                self.hambre = 100
-                self.necesidad_bano += 30
-                self.tiempos['restaurantes'] += 0.2
+                if np.random.randint(0, 100) <= 20:
+                    self.hambre = 100
+                    self.necesidad_bano += 30
+                self.tiempos['restaurantes'] += 1
                 
             norm = np.hypot(dir_x, dir_y)
             if norm > 0:
@@ -200,8 +211,18 @@ class Asistente:
                     self.interactuar_tiendas()
                     self.mover()
 
-        self.energia -= 0.05  # Cada paso consume un poco de energía
+
+        # Parámetros de la distribución normal
+        media = 0.01  # Ejemplo: reduce en promedio un 2% de energía
+        desviacion = 0.04  # Varía hasta un 1% alrededor de la media
+
+        # Reducir energía usando una distribución normal
+        reduccion_energia = np.random.normal(media, desviacion)
+        self.energia -= reduccion_energia
+
+        # Asegurarse de que la energía no caiga por debajo de 0
+        self.energia = max(self.energia, 0)
         # Los asistentes se vuelven más hambrientos con el tiempo
-        self.hambre -= 0.1
+        self.hambre -= 0.6
         self.aburrimiento += 0.8
-        self.necesidad_bano += 0.1
+        self.necesidad_bano += 0.5
