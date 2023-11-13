@@ -4,6 +4,7 @@ import matplotlib.patches as patches
 from matplotlib import animation
 import numpy as np
 import sys
+from cola import Cola
 
 #REPORT
 REPORT_INTERVAL = 50
@@ -40,11 +41,11 @@ class Festival:
             {"coords": (x, y), "dims": (width, height), "capacidad": capacidad}
         )
 
-    def agregar_zona_comida(self, x, y, capacidad):
-        self.zonas_comida.append({"coords": (x, y), "capacidad": capacidad})
+    def agregar_zona_comida(self, x, y, capacidad, capacidad_cola):
+        self.zonas_comida.append({"coords": (x, y), "capacidad": capacidad, "cola": Cola(capacidad_cola)})
 
-    def agregar_baños(self, x, y, radio):
-        self.baños.append({"coords": (x, y), "radio": radio})
+    def agregar_baños(self, x, y, radio, capacidad_cola):
+        self.baños.append({"coords": (x, y), "radio": radio, "cola": Cola(capacidad_cola)})
 
     def agregar_punto_encuentro(self, x, y, capacidad):
         self.puntos_encuentro.append({"coords": (x, y),
@@ -142,6 +143,24 @@ class Festival:
                 [a.x for a in asistentes if a.estado != "salió"],
                 [a.y for a in asistentes if a.estado != "salió"]
             )
+
+            # Actualización adicional para manejar las colas
+            for baño in self.baños:
+                cola_baño = baño["cola"].cola
+                if cola_baño:
+                    cola_baño[0].tiempo_en_baño -= 1
+                    if cola_baño[0].tiempo_en_baño <= 0:
+                        asistente = baño["cola"].salir_de_cola()
+                        if asistente:
+                            asistente.necesidad_bano = 0
+                            asistente.estado = "relajado"
+                            
+            for zona_comida in self.zonas_comida:
+                if zona_comida["cola"].cola:  # Si hay gente en la cola
+                    asistente = zona_comida["cola"].salir_de_cola()
+                    if asistente:
+                        asistente.hambre = 100  # Asistente ha comido
+                        asistente.estado = "relajado"
 
             # Actualiza posiciones de los miembros de seguridad
             for s in seguridad:

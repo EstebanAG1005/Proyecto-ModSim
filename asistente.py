@@ -39,6 +39,8 @@ class Asistente:
             'baños': 0,
             'restaurantes': 0,
         }
+        self.tiempo_en_baño = 0
+        
     
     def reset_times(self):
         self.tiempos = {
@@ -142,6 +144,16 @@ class Asistente:
                 self.x += dir_x * self.velocidad
                 self.y += dir_y * self.velocidad
             
+            for baño in self.festival.baños:
+                distancia = np.hypot(
+                    self.x - baño["coords"][0], self.y - baño["coords"][1]
+                )
+                if distancia <= baño["radio"]:
+                    if baño["cola"].entrar_en_cola(self):
+                        self.estado = "en cola para baño"
+                        self.tiempo_en_baño = np.random.randint(3, 6)  # Tiempo aleatorio entre 3 y 5 iteraciones
+                    break
+            
             return True
         return False
 
@@ -169,6 +181,15 @@ class Asistente:
                 self.x += dir_x * self.velocidad
                 self.y += dir_y * self.velocidad
             return True
+
+            for zona in self.festival.zonas_comida:
+                distancia = np.hypot(
+                    self.x - zona["coords"][0], self.y - zona["coords"][1]
+                )
+                if distancia <= 5:  # Suponiendo que 5 es el radio de interacción
+                    if zona["cola"].entrar_en_cola(self):
+                        self.estado = "en cola para comida"
+                    break 
         return False
     
     def in_bound(self, x, y):
