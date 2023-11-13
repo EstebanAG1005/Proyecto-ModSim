@@ -2,8 +2,10 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib import animation
+from matplotlib.widgets import TextBox
 import numpy as np
 import sys
+from tqdm import tqdm
 
 #REPORT
 REPORT_INTERVAL = 50
@@ -133,6 +135,29 @@ class Festival:
             color="orange"
         )
 
+        # Inicializa la barra de progreso y cuadros de texto
+        progress_bar = tqdm(total=MAX_FRAMES, desc="Simulación")
+
+        # Coordenadas y dimensiones del TextBox (ajusta según sea necesario)
+        text_box_x = 0.125
+        text_box_y = 0.88
+        text_box_width = 0.30
+        text_box_height = 0.1
+
+        text_box = TextBox(
+            fig.add_axes([text_box_x, text_box_y, text_box_width, text_box_height]),
+            "",
+            initial=""
+        )
+
+        def update_text_box():
+            text_box.set_val(
+                f"Asistentes en escenario: {metricas['asistentes_en_escenario'][-1]}\n"
+                f"Asistentes en comida: {metricas['asistentes_en_comida'][-1]}\n"
+                f"Asistentes en baños: {metricas['asistentes_en_banos'][-1]}\n"
+                f"Gasto total: {metricas['gasto_total'][-1]}"
+            )
+
         def update(num):
             self.frame_counter +=1
             # Actualizar posiciones de los asistentes
@@ -153,8 +178,21 @@ class Festival:
             if self.frame_counter % self.report_interval == 0:
                 self.generar_reporte(asistentes, seguridad, metricas)
 
+                # Actualiza las métricas en tiempo real
+                progress_bar.set_postfix({
+                    'Asistentes en escenario': metricas['asistentes_en_escenario'][-1],
+                    'Asistentes en comida': metricas['asistentes_en_comida'][-1],
+                    'Asistentes en baños': metricas['asistentes_en_banos'][-1],
+                    'Gasto total': metricas['gasto_total'][-1]
+                })
+
+                update_text_box()
+
+                progress_bar.update(self.report_interval)
+
             if self.frame_counter == MAX_FRAMES - 1:
                 plt.close()
+                progress_bar.close()
 
             return (puntos_asistentes, puntos_seguridad)
 

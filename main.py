@@ -9,7 +9,7 @@ TOTAL_ASISTENTES_INICIAL = 500
 
 
 festival = Festival(100, 100, TOTAL_ASISTENTES_INICIAL)
-festival.agregar_escenario(50, 20, 20, 10, 500)
+festival.agregar_escenario(50, 20, 10, 10, 500)
 festival.agregar_escenario(15, 60, 10, 10, 250)
 festival.agregar_zona_comida(50, 50, 100)
 festival.agregar_zona_comercial(95, 5, 10, 10, 100)
