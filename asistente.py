@@ -33,6 +33,13 @@ class Asistente:
         self.causando_problemas = np.random.choice(
             [True, False], p=[clumpsynes, 1 - clumpsynes]
         )
+        if self.edad >= 50:
+            self.tipo = "anciano"
+        elif self.edad >= 20 and self.edad <= 49:
+            self.tipo = "adulto"
+        else:
+            self.tipo = "nino"
+
         self.tiempos = {
             'tiendas': 0,
             'escenarios': 0,
@@ -50,107 +57,249 @@ class Asistente:
         }
 
     def mover(self):
-        if self.aburrimiento >= 80 and self.gasto > 10:
-            if len(self.festival.zonas_comerciales) > 0:
-                # Movemos al asistente hacia la zona de comercio
-                zona_comercial_cercana = min(
-                    self.festival.zonas_comerciales,
-                    key=lambda e: np.hypot(
-                        self.x - e["coords"][0], self.y - e["coords"][1]
-                    ),
-                )
-                dir_x = zona_comercial_cercana["coords"][0] - self.x
-                dir_y = zona_comercial_cercana["coords"][1] - self.y
-                norm = np.hypot(dir_x, dir_y)
-                if norm > 0:
-                    dir_x /= norm
-                    dir_y /= norm
-                    self.x += dir_x * self.velocidad
-                    self.y += dir_y * self.velocidad
-        
-        elif self.aburrimiento >= 80:
-            if 0 <= self.x <= self.festival.width:
-                self.x += np.random.randint(0, 3) - 1
-            if 0 <= self.y <= self.festival.height:
-                self.y += np.random.randint(0, 3) - 1
-            if np.random.randint(0, 100) < 6:
-                self.aburrimiento = 10
-        
-        else:
-            if len(self.festival.escenarios) > 0:
-                # Movemos al asistente hacia el escenario más cercano
-                escenario_cercano = min(
-                    self.festival.escenarios,
-                    key=lambda e: np.hypot(
-                        self.x - e["coords"][0], self.y - e["coords"][1]
-                    ),
-                )
-                dir_x = escenario_cercano["coords"][0] - self.x
-                dir_y = escenario_cercano["coords"][1] - self.y
-                norm = np.hypot(dir_x, dir_y)
-                if -3 <= dir_x <= 3 and -3 <= dir_y <= 3:
-                    self.tiempos['escenarios'] +=1
-                if norm > 0:
-                    dir_x /= norm
-                    dir_y /= norm
-                    self.x += dir_x * self.velocidad
-                    self.y += dir_y * self.velocidad
-        # Se pueden añadir más comportamientos dependiendo
-        # del estado del asistente
+        if self.tipo == "adulto":
+            if self.aburrimiento >= 80 and self.gasto > 10:
+                if len(self.festival.zonas_comerciales) > 0:
+                    # Movemos al asistente hacia la zona de comercio
+                    zona_comercial_cercana = min(
+                        self.festival.zonas_comerciales,
+                        key=lambda e: np.hypot(
+                            self.x - e["coords"][0], self.y - e["coords"][1]
+                        ),
+                    )
+                    dir_x = zona_comercial_cercana["coords"][0] - self.x
+                    dir_y = zona_comercial_cercana["coords"][1] - self.y
+                    norm = np.hypot(dir_x, dir_y)
+                    if norm > 0:
+                        dir_x /= norm
+                        dir_y /= norm
+                        self.x += dir_x * self.velocidad
+                        self.y += dir_y * self.velocidad
+            
+            elif self.aburrimiento >= 80:
+                if 0 <= self.x <= self.festival.width:
+                    self.x += np.random.randint(0, 3) - 1
+                if 0 <= self.y <= self.festival.height:
+                    self.y += np.random.randint(0, 3) - 1
+                if np.random.randint(0, 100) < 6:
+                    self.aburrimiento = 10
+            
+            else:
+                if len(self.festival.escenarios) > 0:
+                    # Movemos al asistente hacia el escenario más cercano
+                    escenario_cercano = min(
+                        self.festival.escenarios,
+                        key=lambda e: np.hypot(
+                            self.x - e["coords"][0], self.y - e["coords"][1]
+                        ),
+                    )
+                    dir_x = escenario_cercano["coords"][0] - self.x
+                    dir_y = escenario_cercano["coords"][1] - self.y
+                    norm = np.hypot(dir_x, dir_y)
+                    if -3 <= dir_x <= 3 and -3 <= dir_y <= 3:
+                        self.tiempos['escenarios'] +=1
+                    if norm > 0:
+                        dir_x /= norm
+                        dir_y /= norm
+                        self.x += dir_x * self.velocidad
+                        self.y += dir_y * self.velocidad
+            # Se pueden añadir más comportamientos dependiendo
+            # del estado del asistente
+
+        else: # ancianos y ninos
+            if self.aburrimiento >= 60 and self.gasto > 10:
+                if len(self.festival.zonas_comerciales) > 0:
+                    # Movemos al asistente hacia la zona de comercio
+                    zona_comercial_cercana = min(
+                        self.festival.zonas_comerciales,
+                        key=lambda e: np.hypot(
+                            self.x - e["coords"][0], self.y - e["coords"][1]
+                        ),
+                    )
+                    dir_x = zona_comercial_cercana["coords"][0] - self.x
+                    dir_y = zona_comercial_cercana["coords"][1] - self.y
+                    norm = np.hypot(dir_x, dir_y)
+                    if norm > 0:
+                        dir_x /= norm
+                        dir_y /= norm
+                        self.x += dir_x * self.velocidad
+                        self.y += dir_y * self.velocidad
+            
+            elif self.aburrimiento >= 80:
+                if 0 <= self.x <= self.festival.width:
+                    self.x += np.random.randint(0, 3) - 1
+                if 0 <= self.y <= self.festival.height:
+                    self.y += np.random.randint(0, 3) - 1
+                if np.random.randint(0, 100) < 6:
+                    self.aburrimiento = 10
+            
+            else:
+                if len(self.festival.escenarios) > 0:
+                    # Movemos al asistente hacia el escenario más cercano
+                    escenario_cercano = min(
+                        self.festival.escenarios,
+                        key=lambda e: np.hypot(
+                            self.x - e["coords"][0], self.y - e["coords"][1]
+                        ),
+                    )
+                    dir_x = escenario_cercano["coords"][0] - self.x
+                    dir_y = escenario_cercano["coords"][1] - self.y
+                    norm = np.hypot(dir_x, dir_y)
+                    if -3 <= dir_x <= 3 and -3 <= dir_y <= 3:
+                        self.tiempos['escenarios'] +=1
+                    if norm > 0:
+                        dir_x /= norm
+                        dir_y /= norm
+                        self.x += dir_x * self.velocidad
+                        self.y += dir_y * self.velocidad
+            # Se pueden añadir más comportamientos dependiendo
+            # del estado del asistente
 
     def interactuar_tiendas(self):
         # Si el asistente se encuentra cerca de una tienda,
         # interactuará con ella
-        for tienda in self.festival.zonas_comerciales:
-            distancia = np.hypot(
-                self.x - tienda["coords"][0], self.y - tienda["coords"][1]
-            )
-            # Asumiendo que 5 metros es una distancia de interacción
-            if distancia <= 5:
-                if self.gasto > 0:
-                    self.gasto -= np.random.uniform(
-                        0, self.gasto
-                    )/10
-                self.aburrimiento -= 2
-                self.tiempos['tiendas'] += 1
+        if self.tipo == "adulto":
+            for tienda in self.festival.zonas_comerciales:
+                distancia = np.hypot(
+                    self.x - tienda["coords"][0], self.y - tienda["coords"][1]
+                )
+                # Asumiendo que 5 metros es una distancia de interacción
+                if distancia <= 5:
+                    if self.gasto > 0:
+                        self.gasto -= np.random.uniform(
+                            0, self.gasto
+                        )/10
+                    self.aburrimiento -= 2
+                    self.tiempos['tiendas'] += 1
+
+        else: # son ninos o ancianos
+            for tienda in self.festival.zonas_comerciales:
+                distancia = np.hypot(
+                    self.x - tienda["coords"][0], self.y - tienda["coords"][1]
+                )
+                # Asumiendo que 5 metros es una distancia de interacción
+                if distancia <= 5:
+                    if self.gasto > 0:
+                        self.gasto -= np.random.uniform(
+                            0, self.gasto
+                        )/10
+                    self.aburrimiento -= 5
+             
 
     def mover_hacia_baño(self):
-        if self.necesidad_bano > 90 and len(self.festival.baños) > 0:
-            # If already in a queue, continue to the same bathroom
-            if self.current_queue:
-                baño_cercano = self.current_queue
-            else:
-                # Choose the bathroom with the shortest queue
-                baño_cercano = min(
-                    self.festival.baños,
-                    key=lambda b: (len(b["queue"]), np.hypot(self.x - b["coords"][0],
-                                                            self.y - b["coords"][1]))
-                )
+        if self.tipo == "adulto":
+            if self.necesidad_bano > 90 and len(self.festival.baños) > 0:
+                # If already in a queue, continue to the same bathroom
+                if self.current_queue:
+                    baño_cercano = self.current_queue
+                else:
+                    # Choose the bathroom with the shortest queue
+                    baño_cercano = min(
+                        self.festival.baños,
+                        key=lambda b: (len(b["queue"]), np.hypot(self.x - b["coords"][0],
+                                                                self.y - b["coords"][1]))
+                    )
 
-            dir_x = baño_cercano["coords"][0] - self.x
-            dir_y = baño_cercano["coords"][1] - self.y
-            norm = np.hypot(dir_x, dir_y)
+                dir_x = baño_cercano["coords"][0] - self.x
+                dir_y = baño_cercano["coords"][1] - self.y
+                norm = np.hypot(dir_x, dir_y)
 
-            if norm <= 3:  # Near the bathroom
-                if self not in baño_cercano["queue"]:
-                    baño_cercano["queue"].append(self)
-                    self.current_queue = baño_cercano  # Update the current queue
-                    self.tiempos['baños'] += 1
+                if norm <= 3:  # Near the bathroom
+                    if self not in baño_cercano["queue"]:
+                        baño_cercano["queue"].append(self)
+                        self.current_queue = baño_cercano  # Update the current queue
+                        self.tiempos['baños'] += 1
 
-                if baño_cercano["queue"][0] == self:  # It's their turn
-                    if np.random.randint(0, 100) <= 90:
-                        self.necesidad_bano = 0
-                        baño_cercano["queue"].pop(0)  # Leave the queue
-                        self.current_queue = None  # Clear the current queue
-                    self.tiempos['baños'] += 1
-            else:
-                # Move towards the bathroom
-                dir_x /= norm
-                dir_y /= norm
-                self.x += dir_x * self.velocidad
-                self.y += dir_y * self.velocidad
-            return True
-        return False
+                    if baño_cercano["queue"][0] == self:  # It's their turn
+                        if np.random.randint(0, 100) <= 90:
+                            self.necesidad_bano = 0
+                            baño_cercano["queue"].pop(0)  # Leave the queue
+                            self.current_queue = None  # Clear the current queue
+                        self.tiempos['baños'] += 1
+                else:
+                    # Move towards the bathroom
+                    dir_x /= norm
+                    dir_y /= norm
+                    self.x += dir_x * self.velocidad
+                    self.y += dir_y * self.velocidad
+                return True
+            return False
+        
+        elif self.tipo == "anciano": # ancianos
+            if self.necesidad_bano > 50 and len(self.festival.baños) > 0:
+                # If already in a queue, continue to the same bathroom
+                if self.current_queue:
+                    baño_cercano = self.current_queue
+                else:
+                    # Choose the bathroom with the shortest queue
+                    baño_cercano = min(
+                        self.festival.baños,
+                        key=lambda b: (len(b["queue"]), np.hypot(self.x - b["coords"][0],
+                                                                self.y - b["coords"][1]))
+                    )
+
+                dir_x = baño_cercano["coords"][0] - self.x
+                dir_y = baño_cercano["coords"][1] - self.y
+                norm = np.hypot(dir_x, dir_y)
+
+                if norm <= 3:  # Near the bathroom
+                    if self not in baño_cercano["queue"]:
+                        baño_cercano["queue"].append(self)
+                        self.current_queue = baño_cercano  # Update the current queue
+                        self.tiempos['baños'] += 1
+
+                    if baño_cercano["queue"][0] == self:  # It's their turn
+                        if np.random.randint(0, 100) <= 90:
+                            self.necesidad_bano = 0
+                            baño_cercano["queue"].pop(0)  # Leave the queue
+                            self.current_queue = None  # Clear the current queue
+                        self.tiempos['baños'] += 1
+                else:
+                    # Move towards the bathroom
+                    dir_x /= norm
+                    dir_y /= norm
+                    self.x += dir_x * self.velocidad
+                    self.y += dir_y * self.velocidad
+                return True
+            return False
+        
+        else: # ninos
+            if self.necesidad_bano > 70 and len(self.festival.baños) > 0:
+                # If already in a queue, continue to the same bathroom
+                if self.current_queue:
+                    baño_cercano = self.current_queue
+                else:
+                    # Choose the bathroom with the shortest queue
+                    baño_cercano = min(
+                        self.festival.baños,
+                        key=lambda b: (len(b["queue"]), np.hypot(self.x - b["coords"][0],
+                                                                self.y - b["coords"][1]))
+                    )
+
+                dir_x = baño_cercano["coords"][0] - self.x
+                dir_y = baño_cercano["coords"][1] - self.y
+                norm = np.hypot(dir_x, dir_y)
+
+                if norm <= 3:  # Near the bathroom
+                    if self not in baño_cercano["queue"]:
+                        baño_cercano["queue"].append(self)
+                        self.current_queue = baño_cercano  # Update the current queue
+                        self.tiempos['baños'] += 1
+
+                    if baño_cercano["queue"][0] == self:  # It's their turn
+                        if np.random.randint(0, 100) <= 90:
+                            self.necesidad_bano = 0
+                            baño_cercano["queue"].pop(0)  # Leave the queue
+                            self.current_queue = None  # Clear the current queue
+                        self.tiempos['baños'] += 1
+                else:
+                    # Move towards the bathroom
+                    dir_x /= norm
+                    dir_y /= norm
+                    self.x += dir_x * self.velocidad
+                    self.y += dir_y * self.velocidad
+                return True
+            return False
 
     def mover_hacia_comida(self):
         if self.hambre < 20 and len(self.festival.zonas_comida) > 0:
@@ -230,6 +379,17 @@ class Asistente:
         # Asegurarse de que la energía no caiga por debajo de 0
         self.energia = max(self.energia, 0)
         # Los asistentes se vuelven más hambrientos con el tiempo
-        self.hambre -= 0.6
-        self.aburrimiento += 0.8
-        self.necesidad_bano += 0.5
+        if self.tipo == "adulto":
+            self.hambre -= 0.6
+            self.aburrimiento += 0.8
+            self.necesidad_bano += 0.5
+
+        elif self.tipo == "anciano":
+            self.hambre -= 0.8
+            self.aburrimiento += 1.8
+            self.necesidad_bano += 1.5
+        else:
+            self.hambre -= 2
+            self.aburrimiento += 3
+            self.necesidad_bano += 1
+            
