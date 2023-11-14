@@ -138,7 +138,7 @@ class Asistente:
                     self.tiempos['baños'] += 1
 
                 if baño_cercano["queue"][0] == self:  # It's their turn
-                    if np.random.randint(0, 100) <= 50:
+                    if np.random.randint(0, 100) <= 75:
                         self.necesidad_bano = 0
                         baño_cercano["queue"].pop(0)  # Leave the queue
                         self.current_queue = None  # Clear the current queue
