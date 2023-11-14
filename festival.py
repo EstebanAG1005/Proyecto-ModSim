@@ -1,6 +1,8 @@
 # Importamos las bibliotecas necesarias
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+import matplotlib.image as mpimg
 from matplotlib import animation
 from matplotlib.widgets import TextBox
 import numpy as np
@@ -73,57 +75,81 @@ class Festival:
             label="Salida",
         )
 
+        img_bano = mpimg.imread('./imgs/toilet.png')
+        img_esce = mpimg.imread('./imgs/stage.png')
+        img_truck = mpimg.imread('./imgs/truck.png')
+        img_store = mpimg.imread('./imgs/store.png')
+        img_pasto = mpimg.imread('./imgs/grass.png')
+
+        #ax.imshow(img_pasto, extent=[0, self.width, 0, self.height], aspect='auto')
+        ax.set_facecolor('#73BE73')
         # Dibuja los baños
         for baño in self.baños:
-            plt.scatter(
-                baño["coords"][0],
-                baño["coords"][1],
-                color="blue",
-                label="Baño"
-            )
+            # plt.scatter(
+            #     baño["coords"][0],
+            #     baño["coords"][1],
+            #     color="blue",
+            #     label="Baño"
+            # )
+            # Ajusta el tamaño con el parámetro 'zoom'
+            imagebox = OffsetImage(img_bano, zoom=0.2)
+            ab = AnnotationBbox(imagebox, (baño["coords"][0],
+                                           baño["coords"][1]),
+                                frameon=False)
+            ax.add_artist(ab)
 
         # Dibujar escenarios
         for escenario in self.escenarios:
-            ax.add_patch(
-                patches.Rectangle(
-                    (
-                        # Cambio aquí
-                        escenario["coords"][0]\
-                        - escenario["dims"][0] / 2,
-                        # Y aquí
-                        escenario["coords"][1] - escenario["dims"][1] / 2,
-                    ),
-                    escenario["dims"][0],  # Cambio aquí
-                    escenario["dims"][1],  # Y aquí
-                    color="blue",
-                )
-            )
+            # ax.add_patch(
+            #     patches.Rectangle(
+            #         (
+            #             # Cambio aquí
+            #             escenario["coords"][0]\
+            #             - escenario["dims"][0] / 2,
+            #             # Y aquí
+            #             escenario["coords"][1] - escenario["dims"][1] / 2,
+            #         ),
+            #         escenario["dims"][0],  # Cambio aquí
+            #         escenario["dims"][1],  # Y aquí
+            #         color="blue",
+            #     )
+            # )
+            imagebox = OffsetImage(img_esce, zoom=0.1)  # Ajusta el tamaño con el parámetro 'zoom'
+            ab = AnnotationBbox(imagebox, (escenario["coords"][0], escenario["coords"][1]), frameon=False)
+            ax.add_artist(ab)
 
         # Dibujar zonas de comida
         for zona in self.zonas_comida:
-            ax.add_patch(patches.Circle(zona["coords"], 5, color="green"))
+            #ax.add_patch(patches.Circle(zona["coords"], 5, color="green"))
+            imagebox = OffsetImage(img_truck, zoom=0.1)  # Ajusta el tamaño con el parámetro 'zoom'
+            ab = AnnotationBbox(imagebox, (zona["coords"][0], zona["coords"][1]), frameon=False)
+            ax.add_artist(ab)
 
         # Dibujar zonas comerciales
         for zona in self.zonas_comerciales:
-            ax.add_patch(
-                patches.Rectangle(
-                    (
-                        # Corrección aquí
-                        zona["coords"][0] - zona["dims"][0] / 2,
-                        zona["coords"][1] - zona["dims"][1] / 2,  # Y aquí
-                    ),
-                    zona["dims"][0],  # Aquí
-                    zona["dims"][1],  # Y aquí
-                    color="red",
-                )
-            )
+            # ax.add_patch(
+            #     patches.Rectangle(
+            #         (
+            #             # Corrección aquí
+            #             zona["coords"][0] - zona["dims"][0] / 2,
+            #             zona["coords"][1] - zona["dims"][1] / 2,  # Y aquí
+            #         ),
+            #         zona["dims"][0],  # Aquí
+            #         zona["dims"][1],  # Y aquí
+            #         color="red",
+            #     )
+            # )
+            imagebox = OffsetImage(img_store, zoom=0.1)  # Ajusta el tamaño con el parámetro 'zoom'
+            ab = AnnotationBbox(imagebox, (zona["coords"][0], zona["coords"][1]), frameon=False)
+            ax.add_artist(ab)
 
         # asistentes
         (puntos_asistentes,) = ax.plot(
             [a.x for a in asistentes],
             [a.y for a in asistentes],
             "o",
-            markersize=3
+            markersize=3,
+            color="black"
         )
 
         # seguridad
@@ -132,7 +158,7 @@ class Festival:
             [s.y for s in seguridad],
             "s",
             markersize=5,
-            color="orange"
+            color="red"
         )
 
         # Inicializa la barra de progreso y cuadros de texto
@@ -155,6 +181,7 @@ class Festival:
                 f"Asistentes en escenario: {metricas['asistentes_en_escenario'][-1]}\n"
                 f"Asistentes en comida: {metricas['asistentes_en_comida'][-1]}\n"
                 f"Asistentes en baños: {metricas['asistentes_en_banos'][-1]}\n"
+                f"Incidentes Detectados: {metricas['incidentes_detectados'][-1]}\n"
                 f"Gasto total: {metricas['gasto_total'][-1]}"
             )
 
@@ -183,6 +210,7 @@ class Festival:
                     'Asistentes en escenario': metricas['asistentes_en_escenario'][-1],
                     'Asistentes en comida': metricas['asistentes_en_comida'][-1],
                     'Asistentes en baños': metricas['asistentes_en_banos'][-1],
+                    'Incidentes detectados': metricas['incidentes_detectados'][-1],
                     'Gasto total': metricas['gasto_total'][-1]
                 })
 
