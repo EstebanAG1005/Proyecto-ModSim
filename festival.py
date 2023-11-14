@@ -8,7 +8,8 @@ from matplotlib.widgets import TextBox
 import numpy as np
 import sys
 from tqdm import tqdm
-from masa import Queue
+from queue import Queue
+
 
 #REPORT
 REPORT_INTERVAL = 50
@@ -37,11 +38,17 @@ class Festival:
             "x": width,
             "y": height / 2,
         }  # Añadimos una salida en la mitad del borde derecho
-        self.baños = []
         self.total_asistentes_inicial = total_asistentes_inicial
-        self.banos_queue = Queue()
-        self.tiendas_queue = Queue()
-        self.comida_queue = Queue()
+        self.baños_queue = {i: Queue() for i in range(len(self.baños))}
+        self.tiendas_queue = {i: Queue() for i in range(len(self.zonas_comerciales))}
+        self.comida_queue = {i: Queue() for i in range(len(self.zonas_comida))}
+
+    def procesar_colas(self):
+        for i, baño in enumerate(self.baños):
+            if not self.baños_queue[i].empty():
+                asistente = self.baños_queue[i].get()
+                # Allow the assistant to use the bathroom
+                asistente.usar_baño()
 
     def agregar_escenario(self, x, y, width, height, capacidad):
         self.escenarios.append(
