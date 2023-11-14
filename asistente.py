@@ -116,25 +116,54 @@ class Asistente:
     def mover_hacia_baño(self):
         # Suponemos que si un asistente necesita ir al baño
         # su necesidad es > 90
-        if self.necesidad_bano > 90 and len(self.festival.baños) > 0:
+        if self.necesidad_bano > 90 :
 
-            self.festival.banos_queue.enqueue(self)
-            
+            #busqueda de cola en cada baño
+            banos = self.festival.banos_queue
+            minima_cola = {}
+            distancia_bano = {}
+            minimos_banos = {}
 
-            baño_cercano = min(
-                self.festival.baños,
-                key=lambda b: np.hypot(self.x - b["coords"][0],
-                                       self.y - b["coords"][1])
-            )
-            dir_x = baño_cercano["coords"][0] - self.x
-            dir_y = baño_cercano["coords"][1] - self.y
+            for key, v in banos.items():
+                if len(v) < self.festival.banos_max[key]:
+                    dist = np.hypot(self.x - key[0], self.y - key[1])
+                    cola = len(v)
+                    minima_cola[key] = cola
+                    distancia_bano[key] = dist
+                    total = cola + dist
+                    minimos_banos[key] = total
+            baño_cercano = None
+            if len(minimos_banos) > 0 and not self.festival.onqueue(self):
+                baño_cercano = min(minimos_banos, key=minimos_banos.get)
+                self.festival.banos_queue[baño_cercano].append(self)
+                self.tiempos['baños'] +=1
+
+
+            # baño_cercano = min(
+            #     self.festival.baños,
+            #     key=lambda b: np.hypot(self.x - b["coords"][0],
+            #                            self.y - b["coords"][1])
+            # )
+
+            if len(minima_cola) <= 0 or baño_cercano is None:
+                if np.random.randint(0, 100) <= 50:
+                    return self.mover_hacia_salida()
+                else:
+                    self.mover()
+                    return True
+
+            dir_x = baño_cercano[0] - self.x
+            dir_y = baño_cercano[1] - self.y
             
             # Calculamos la dirección hacia el baño
 
             if -3 <= dir_x <= 3 and -3 <= dir_y <= 3:
-                if np.random.randint(0, 100) <= 20:
-                    self.aburrimiento = 10
-                    self.necesidad_bano = 15
+                self.festival.banos_queue[(baño_cercano[0], baño_cercano[1])].append(self)
+                #if self.festival.banos_queue[(baño_cercano[0], baño_cercano[1])].index(self) == 0:
+                if np.random.randint(0, 100) <= 60:
+                    self.energia += 10
+                    self.necesidad_bano = 5
+                    self.festival.banos_queue[(baño_cercano[0], baño_cercano[1])].pop(self)
                 self.tiempos['baños'] +=1
 
             norm = np.hypot(dir_x, dir_y)
@@ -147,10 +176,6 @@ class Asistente:
                 self.y += dir_y * self.velocidad
             
             return True
-        
-        if self.festival.banos_queue.front() == self:
-            self.necesidad_bano = 0
-            self.festival.banos_queue.dequeue()
 
         return False
     
@@ -243,4 +268,4 @@ class Asistente:
         # Los asistentes se vuelven más hambrientos con el tiempo
         self.hambre -= 0.6
         self.aburrimiento += 0.8
-        self.necesidad_bano += 0.5
+        self.necesidad_bano += 1

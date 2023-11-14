@@ -39,9 +39,10 @@ class Festival:
             "y": height / 2,
         }  # Añadimos una salida en la mitad del borde derecho
         self.total_asistentes_inicial = total_asistentes_inicial
-        self.baños_queue = {i: Queue() for i in range(len(self.baños))}
+        self.banos_queue = {i: Queue() for i in range(len(self.baños))}
         self.tiendas_queue = {i: Queue() for i in range(len(self.zonas_comerciales))}
         self.comida_queue = {i: Queue() for i in range(len(self.zonas_comida))}
+        self.banos_max = {i: 0 for i in range(len(self.baños))}
 
     def procesar_colas(self):
         for i, baño in enumerate(self.baños):
@@ -58,12 +59,20 @@ class Festival:
     def agregar_zona_comida(self, x, y, capacidad):
         self.zonas_comida.append({"coords": (x, y), "capacidad": capacidad})
 
-    def agregar_baños(self, x, y, radio):
+    def agregar_baños(self, x, y, radio, max=20):
         self.baños.append({"coords": (x, y), "radio": radio})
+        self.banos_queue[(x ,y)] = []
+        self.banos_max[(x ,y)] = max
 
     def agregar_punto_encuentro(self, x, y, capacidad):
         self.puntos_encuentro.append({"coords": (x, y),
                                       "capacidad": capacidad})
+        
+    def onqueue(self, asistente):
+        for key, value in self.banos_queue.items():
+            if asistente in value:
+                return True
+        return False
 
     def agregar_salida(self, x, y, width, height):
         self.salidas.append({"coords": (x, y), "dims": (width, height)})
