@@ -39,6 +39,7 @@ class Asistente:
             'baños': 0,
             'restaurantes': 0,
         }
+        self.current_queue = None
     
     def reset_times(self):
         self.tiempos = {
@@ -114,34 +115,40 @@ class Asistente:
                 self.tiempos['tiendas'] += 1
 
     def mover_hacia_baño(self):
-        # Suponemos que si un asistente necesita ir al baño
-        # su necesidad es > 90
         if self.necesidad_bano > 90 and len(self.festival.baños) > 0:
-            baño_cercano = min(
-                self.festival.baños,
-                key=lambda b: np.hypot(self.x - b["coords"][0],
-                                       self.y - b["coords"][1])
-            )
+            # If already in a queue, continue to the same bathroom
+            if self.current_queue:
+                baño_cercano = self.current_queue
+            else:
+                # Choose the bathroom with the shortest queue
+                baño_cercano = min(
+                    self.festival.baños,
+                    key=lambda b: (len(b["queue"]), np.hypot(self.x - b["coords"][0],
+                                                            self.y - b["coords"][1]))
+                )
+
             dir_x = baño_cercano["coords"][0] - self.x
             dir_y = baño_cercano["coords"][1] - self.y
-            
-            # Calculamos la dirección hacia el baño
-
-            if -3 <= dir_x <= 3 and -3 <= dir_y <= 3:
-                if np.random.randint(0, 100) <= 20:
-                    self.aburrimiento = 10
-                    self.necesidad_bano = 15
-                self.tiempos['baños'] +=1
-
             norm = np.hypot(dir_x, dir_y)
-            
-            # Movemos al asistente hacia el baño
-            if norm > 0:
+
+            if norm <= 3:  # Near the bathroom
+                if self not in baño_cercano["queue"]:
+                    baño_cercano["queue"].append(self)
+                    self.current_queue = baño_cercano  # Update the current queue
+                    self.tiempos['baños'] += 1
+
+                if baño_cercano["queue"][0] == self:  # It's their turn
+                    if np.random.randint(0, 100) <= 50:
+                        self.necesidad_bano = 0
+                        baño_cercano["queue"].pop(0)  # Leave the queue
+                        self.current_queue = None  # Clear the current queue
+                    self.tiempos['baños'] += 1
+            else:
+                # Move towards the bathroom
                 dir_x /= norm
                 dir_y /= norm
                 self.x += dir_x * self.velocidad
                 self.y += dir_y * self.velocidad
-            
             return True
         return False
 
