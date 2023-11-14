@@ -117,6 +117,10 @@ class Asistente:
         # Suponemos que si un asistente necesita ir al baño
         # su necesidad es > 90
         if self.necesidad_bano > 90 and len(self.festival.baños) > 0:
+
+            self.festival.banos_queue.enqueue(self)
+            
+
             baño_cercano = min(
                 self.festival.baños,
                 key=lambda b: np.hypot(self.x - b["coords"][0],
@@ -143,7 +147,21 @@ class Asistente:
                 self.y += dir_y * self.velocidad
             
             return True
+        
+        if self.festival.banos_queue.front() == self:
+            self.necesidad_bano = 0
+            self.festival.banos_queue.dequeue()
+
         return False
+    
+    def not_in_queue(self):
+        # Check if the attendee is not in the bathroom, store, or food queues
+        not_in_banos_ = self not in self.festival.banos_queue
+        not_in_tiendas_queue = self not in self.festival.tiendas_queue
+        not_in_comida_queue = self not in self.festival.comida_queue
+
+        return not_in_banos_ and not_in_tiendas_queue and not_in_comida_queue
+
 
     def mover_hacia_comida(self):
         if self.hambre < 20 and len(self.festival.zonas_comida) > 0:

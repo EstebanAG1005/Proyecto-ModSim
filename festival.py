@@ -8,6 +8,7 @@ from matplotlib.widgets import TextBox
 import numpy as np
 import sys
 from tqdm import tqdm
+from masa import Queue
 
 #REPORT
 REPORT_INTERVAL = 50
@@ -38,6 +39,9 @@ class Festival:
         }  # Añadimos una salida en la mitad del borde derecho
         self.baños = []
         self.total_asistentes_inicial = total_asistentes_inicial
+        self.banos_queue = Queue()
+        self.tiendas_queue = Queue()
+        self.comida_queue = Queue()
 
     def agregar_escenario(self, x, y, width, height, capacidad):
         self.escenarios.append(
