@@ -9,12 +9,19 @@ TOTAL_ASISTENTES_INICIAL = 500
 
 
 festival = Festival(100, 100, TOTAL_ASISTENTES_INICIAL)
-festival.agregar_escenario(50, 20, 10, 10, 500)
-festival.agregar_escenario(15, 60, 10, 10, 250)
-festival.agregar_zona_comida(50, 50, 100)
-festival.agregar_zona_comercial(95, 5, 10, 10, 100)
-festival.agregar_baños(80, 90, 10)
-festival.agregar_baños(90, 80, 10)
+# festival.agregar_escenario(50, 20, 10, 10, 500)
+# festival.agregar_escenario(15, 60, 10, 10, 250)
+# festival.agregar_zona_comida(50, 50, 100)
+# festival.agregar_zona_comercial(95, 5, 10, 10, 100)
+# festival.agregar_baños(80, 90, 10)
+# festival.agregar_baños(90, 80, 10)
+
+festival.agregar_escenario(30, 20, 10, 10, 500)
+festival.agregar_escenario(70, 20, 10, 10, 250)
+festival.agregar_zona_comida(40, 70, 100)
+festival.agregar_zona_comercial(60, 40, 10, 10, 100)
+festival.agregar_baños(30, 90, 10)
+festival.agregar_baños(70, 90, 10)
 
 seguridad = [
     Seguridad(festival, np.random.randint(100), np.random.randint(100))

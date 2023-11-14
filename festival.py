@@ -59,7 +59,7 @@ class Festival:
         self.zonas_comida.append({"coords": (x, y), "capacidad": capacidad})
 
     def agregar_baños(self, x, y, radio):
-        self.baños.append({"coords": (x, y), "radio": radio})
+        self.baños.append({"coords": (x, y), "radio": radio, "queue": []})
 
     def agregar_punto_encuentro(self, x, y, capacidad):
         self.puntos_encuentro.append({"coords": (x, y),
@@ -72,6 +72,17 @@ class Festival:
         self.zonas_comerciales.append(
             {"coords": (x, y), "dims": (width, height), "capacidad": capacidad}
         )
+
+    def calculate_queue_positions(self, baño):
+        """ Calculate positions for each person in the queue """
+        queue_positions = []
+        queue_spacing = 2  # Spacing between people in the queue
+        for i, person in enumerate(baño["queue"]):
+            # Calculate position for each person in the queue
+            x = baño["coords"][0] + (i * queue_spacing)
+            y = baño["coords"][1]
+            queue_positions.append((x, y))
+        return queue_positions
 
     def dibujar(self, asistentes, seguridad, metricas):
         fig, ax = plt.subplots(figsize=(10, 10))
@@ -103,6 +114,9 @@ class Festival:
             #     label="Baño"
             # )
             # Ajusta el tamaño con el parámetro 'zoom'
+            queue_positions = self.calculate_queue_positions(baño)
+            for pos in queue_positions:
+                ax.plot(pos[0], pos[1], 'o', color='purple')
             imagebox = OffsetImage(img_bano, zoom=0.2)
             ab = AnnotationBbox(imagebox, (baño["coords"][0],
                                            baño["coords"][1]),
